@@ -4,7 +4,7 @@ import 'package:logger/logger.dart';
 import 'package:catcher/catcher.dart';
 
 @lazySingleton
-class LoggerInterceptor extends Interceptor {
+class LoggerInterceptorV2 extends Interceptor {
   final _logger = Logger(
     printer: PrettyPrinter(
       methodCount: 0,

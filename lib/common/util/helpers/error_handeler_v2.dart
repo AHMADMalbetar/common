@@ -16,7 +16,7 @@ mixin HandlingExceptionV2 {
       return Right(result);
     } catch (e, stackTrace) {
       _logError(e, stackTrace);
-      return Left(ErrorHandler.handle(e).failure);
+      return Left(ErrorHandlerV2.handle(e).failure);
     }
   }
 
@@ -26,22 +26,22 @@ mixin HandlingExceptionV2 {
   }
 }
 
-class ErrorHandler implements Exception {
+class ErrorHandlerV2 implements Exception {
   late Failure failure;
 
   // Constructor to handle different types of errors.
-  ErrorHandler.handle(dynamic error) {
+  ErrorHandlerV2.handle(dynamic error) {
     if (error is DioException) {
       failure = _handleDioError(error);
     } else if (error is FormatException) {
       failure = ServerFailure(
         message: 'Invalid data format received.',
-        statusCode: ResponseCode.badRequestServer,
+        statusCode: ResponseCodeV2.badRequestServer,
       );
     } else {
       failure = ServerFailure(
         message: error.toString(),
-        statusCode: ResponseCode.badRequestServer,
+        statusCode: ResponseCodeV2.badRequestServer,
       );
     }
   }
@@ -50,93 +50,93 @@ class ErrorHandler implements Exception {
   Failure _handleDioError(DioException error) {
     switch (error.type) {
       case DioExceptionType.connectionTimeout:
-        return DataSource.connectTimeOut.getFailure();
+        return DataSourceV2.connectTimeOut.getFailure();
       case DioExceptionType.sendTimeout:
-        return DataSource.sendTimeOut.getFailure();
+        return DataSourceV2.sendTimeOut.getFailure();
       case DioExceptionType.receiveTimeout:
-        return DataSource.receiveTimeOut.getFailure();
+        return DataSourceV2.receiveTimeOut.getFailure();
       case DioExceptionType.cancel:
-        return DataSource.cancel.getFailure();
+        return DataSourceV2.cancel.getFailure();
       case DioExceptionType.unknown:
-        return DataSource.def.getFailure();
+        return DataSourceV2.def.getFailure();
       case DioExceptionType.badCertificate:
-        return DataSource.badRequest.getFailure();
+        return DataSourceV2.badRequest.getFailure();
       case DioExceptionType.connectionError:
-        return DataSource.noInternetConnection.getFailure();
+        return DataSourceV2.noInternetConnection.getFailure();
       case DioExceptionType.badResponse:
         return _handleBadResponse(error.response);
       default:
-        return DataSource.def.getFailure();
+        return DataSourceV2.def.getFailure();
     }
   }
 
   // Handle bad HTTP responses with custom error mapping.
   Failure _handleBadResponse(Response? response) {
     if (response == null) {
-      return DataSource.def.getFailure();
+      return DataSourceV2.def.getFailure();
     }
 
     switch (response.statusCode) {
-      case ResponseCode.internalServerError:
-        return DataSource.internetServerError.getFailure();
-      case ResponseCode.notFound:
-        return DataSource.notFound.getFailure();
-      case ResponseCode.forBidden:
-        return DataSource.forBidden.getFailure();
-      case ResponseCode.blocked:
+      case ResponseCodeV2.internalServerError:
+        return DataSourceV2.internetServerError.getFailure();
+      case ResponseCodeV2.notFound:
+        return DataSourceV2.notFound.getFailure();
+      case ResponseCodeV2.forBidden:
+        return DataSourceV2.forBidden.getFailure();
+      case ResponseCodeV2.blocked:
         return UserBlockedFailure(message: AppConstants.blockedError.tr());
-      case ResponseCode.notAllowed:
+      case ResponseCodeV2.notAllowed:
         return UserNotAllowedFailure(message: AppConstants.notAllowed.tr());
-      case ResponseCode.badContent:
+      case ResponseCodeV2.badContent:
         return ServerFailure(
           message: ErrorMessageModel.fromJson(response.data).statusMessage,
-          statusCode: ResponseCode.badContent,
+          statusCode: ResponseCodeV2.badContent,
         );
-      case ResponseCode.badRequestServer:
+      case ResponseCodeV2.badRequestServer:
         return ServerFailure(
           message: ErrorMessageModel.fromJson(response.data).statusMessage,
-          statusCode: ResponseCode.badRequestServer,
+          statusCode: ResponseCodeV2.badRequestServer,
         );
       default:
         return ServerFailure(
           message: response.data?["message"] ?? response.data?["errors"]?.toString() ?? '',
-          statusCode: response.statusCode ?? ResponseCode.badRequest,
+          statusCode: response.statusCode ?? ResponseCodeV2.badRequest,
         );
     }
   }
 }
 
-extension DataSourceExtension on DataSource {
+extension DataSourceExtensionV2 on DataSourceV2 {
   Failure getFailure() {
     switch (this) {
-      case DataSource.success:
-        return ServerFailure(statusCode: ResponseCode.success, message: ResponseMessage.success.tr());
-      case DataSource.noInternet:
-        return ServerFailure(statusCode: ResponseCode.noContent, message: ResponseMessage.noConnect.tr());
-      case DataSource.badRequest:
-        return ServerFailure(statusCode: ResponseCode.badRequest, message: ResponseMessage.badRequest.tr());
-      case DataSource.forBidden:
-        return ServerFailure(statusCode: ResponseCode.forBidden, message: ResponseMessage.forbidden.tr());
-      case DataSource.unAuthorized:
-        return ServerFailure(statusCode: ResponseCode.unAuthorized, message: ResponseMessage.unauthorized.tr());
-      case DataSource.notFound:
-        return ServerFailure(statusCode: ResponseCode.notFound, message: ResponseMessage.notFound.tr());
-      case DataSource.internetServerError:
-        return ServerFailure(statusCode: ResponseCode.internalServerError, message: ResponseMessage.internetServerError.tr());
-      case DataSource.connectTimeOut:
-        return ServerFailure(statusCode: ResponseCode.connectTimeOut, message: ResponseMessage.connectTimeOut.tr());
-      case DataSource.cancel:
-        return ServerFailure(statusCode: ResponseCode.cancel, message: ResponseMessage.cancel.tr());
-      case DataSource.receiveTimeOut:
-        return ServerFailure(statusCode: ResponseCode.receiveTimeOut, message: ResponseMessage.receiveTimeOut.tr());
-      case DataSource.sendTimeOut:
-        return ServerFailure(statusCode: ResponseCode.sendTimeOut, message: ResponseMessage.sendTimeOut.tr());
-      case DataSource.cashError:
-        return ServerFailure(statusCode: ResponseCode.cashError, message: ResponseMessage.cacheError.tr());
-      case DataSource.noInternetConnection:
-        return ServerFailure(statusCode: ResponseCode.noInternetConnection, message: ResponseMessage.noInternetConnection.tr());
-      case DataSource.def:
-        return ServerFailure(statusCode: ResponseCode.def, message: ResponseMessage.def.tr());
+      case DataSourceV2.success:
+        return ServerFailure(statusCode: ResponseCodeV2.success, message: ResponseMessageV2.success.tr());
+      case DataSourceV2.noInternet:
+        return ServerFailure(statusCode: ResponseCodeV2.noContent, message: ResponseMessageV2.noConnect.tr());
+      case DataSourceV2.badRequest:
+        return ServerFailure(statusCode: ResponseCodeV2.badRequest, message: ResponseMessageV2.badRequest.tr());
+      case DataSourceV2.forBidden:
+        return ServerFailure(statusCode: ResponseCodeV2.forBidden, message: ResponseMessageV2.forbidden.tr());
+      case DataSourceV2.unAuthorized:
+        return ServerFailure(statusCode: ResponseCodeV2.unAuthorized, message: ResponseMessageV2.unauthorized.tr());
+      case DataSourceV2.notFound:
+        return ServerFailure(statusCode: ResponseCodeV2.notFound, message: ResponseMessageV2.notFound.tr());
+      case DataSourceV2.internetServerError:
+        return ServerFailure(statusCode: ResponseCodeV2.internalServerError, message: ResponseMessageV2.internetServerError.tr());
+      case DataSourceV2.connectTimeOut:
+        return ServerFailure(statusCode: ResponseCodeV2.connectTimeOut, message: ResponseMessageV2.connectTimeOut.tr());
+      case DataSourceV2.cancel:
+        return ServerFailure(statusCode: ResponseCodeV2.cancel, message: ResponseMessageV2.cancel.tr());
+      case DataSourceV2.receiveTimeOut:
+        return ServerFailure(statusCode: ResponseCodeV2.receiveTimeOut, message: ResponseMessageV2.receiveTimeOut.tr());
+      case DataSourceV2.sendTimeOut:
+        return ServerFailure(statusCode: ResponseCodeV2.sendTimeOut, message: ResponseMessageV2.sendTimeOut.tr());
+      case DataSourceV2.cashError:
+        return ServerFailure(statusCode: ResponseCodeV2.cashError, message: ResponseMessageV2.cacheError.tr());
+      case DataSourceV2.noInternetConnection:
+        return ServerFailure(statusCode: ResponseCodeV2.noInternetConnection, message: ResponseMessageV2.noInternetConnection.tr());
+      case DataSourceV2.def:
+        return ServerFailure(statusCode: ResponseCodeV2.def, message: ResponseMessageV2.def.tr());
     }
   }
 }
@@ -144,7 +144,7 @@ extension DataSourceExtension on DataSource {
 // Response codes and messages remain the same
 // You can add other HTTP status codes or extend messages if needed.
 
-class ResponseCode {
+class ResponseCodeV2 {
   static const int success = 200;
   static const int noContent = 201;
   static const int badRequest = 400;
@@ -165,7 +165,7 @@ class ResponseCode {
   static const int def = -7;
 }
 
-class ResponseMessage {
+class ResponseMessageV2 {
   static const String success = AppConstants.success;
   static const String noConnect = AppConstants.success;
   static const String badRequest = AppConstants.badRequestError;
@@ -199,12 +199,12 @@ class AppConstants {
   static const String noInternetError = 'You are offline';
 }
 
-class ApiInternalStatus {
+class ApiInternalStatusV2 {
   static const int success = 0;
   static const int failed = 1;
 }
 
-enum DataSource {
+enum DataSourceV2 {
   success,
   noInternet,
   badRequest,

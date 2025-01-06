@@ -57,9 +57,9 @@ class ErrorHandler implements Exception {
           case ResponseCode.forBidden:
             return DataSource.forBidden.getFailure();
           case ResponseCode.blocked:
-            return UserBlockedFailure(message: AppConstants.blockedError.tr());
+            return UserBlockedFailure(message: AppConstantsV2.blockedError.tr());
           case ResponseCode.notAllowed:
-            return UserNotAllowedFailure(message: AppConstants.notAllowed.tr());
+            return UserNotAllowedFailure(message: AppConstantsV2.notAllowed.tr());
           case ResponseCode.badContent:
             return ServerFailure(message: ErrorMessageModel.fromJson(error.response?.data).statusMessage, statusCode: ResponseCode.badContent);
           case ResponseCode.badRequestServer:
@@ -133,26 +133,26 @@ class ResponseCode {
 }
 
 class ResponseMessage {
-  static const String SUCCESS = AppConstants.success; // success with data
-  static const String NO_CONTENT = AppConstants.success; // success with no data (no content)
-  static const String BAD_REQUEST = AppConstants.badRequestError; // failure, API rejected request
-  static const String UNAUTORISED = AppConstants.unauthorizedError; // failure, user is not authorised
-  static const String FORBIDDEN = AppConstants.forbiddenError; //  failure, API rejected request
-  static const String INTERNAL_SERVER_ERROR = AppConstants.internalServerError; // failure, crash in server side
-  static const String NOT_FOUND = AppConstants.notFoundError; // failure, crash in server side
+  static const String SUCCESS = AppConstantsV2.success; // success with data
+  static const String NO_CONTENT = AppConstantsV2.success; // success with no data (no content)
+  static const String BAD_REQUEST = AppConstantsV2.badRequestError; // failure, API rejected request
+  static const String UNAUTORISED = AppConstantsV2.unauthorizedError; // failure, user is not authorised
+  static const String FORBIDDEN = AppConstantsV2.forbiddenError; //  failure, API rejected request
+  static const String INTERNAL_SERVER_ERROR = AppConstantsV2.internalServerError; // failure, crash in server side
+  static const String NOT_FOUND = AppConstantsV2.notFoundError; // failure, crash in server side
 
   // local status code
-  static const String CONNECT_TIMEOUT = AppConstants.timeoutError;
-  static const String CANCEL = AppConstants.defaultError;
-  static const String RECIEVE_TIMEOUT = AppConstants.timeoutError;
-  static const String SEND_TIMEOUT = AppConstants.timeoutError;
-  static const String CACHE_ERROR = AppConstants.cacheError;
-  static const String NO_INTERNET_CONNECTION = AppConstants.noInternetError;
-  static const String DEFAULT = AppConstants.defaultError;
+  static const String CONNECT_TIMEOUT = AppConstantsV2.timeoutError;
+  static const String CANCEL = AppConstantsV2.defaultError;
+  static const String RECIEVE_TIMEOUT = AppConstantsV2.timeoutError;
+  static const String SEND_TIMEOUT = AppConstantsV2.timeoutError;
+  static const String CACHE_ERROR = AppConstantsV2.cacheError;
+  static const String NO_INTERNET_CONNECTION = AppConstantsV2.noInternetError;
+  static const String DEFAULT = AppConstantsV2.defaultError;
 }
 
-class AppConstants {
-  AppConstants._();
+class AppConstantsV2 {
+  AppConstantsV2._();
 
   // error handler
   static const String success = 'success';

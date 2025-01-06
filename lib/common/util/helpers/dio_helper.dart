@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 
-import 'logger_interceptor.dart';
+import 'logger_interceptor_v2.dart';
 import 'token_interceptor.dart';
 
 class DioNetwork {
@@ -19,7 +19,7 @@ class DioNetwork {
       ),
     );
     dio.options.headers = {'Accept': 'application/json'};
-    dio.interceptors.addAll([LoggerInterceptor(), TokenInterceptor(), ...interceptors]);
+    dio.interceptors.addAll([LoggerInterceptorV2(), TokenInterceptor(), ...interceptors]);
   }
 
   Future<dynamic> _prepareRequestData(Map<String, dynamic> data) async {
